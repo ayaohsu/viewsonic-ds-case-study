@@ -2,29 +2,27 @@
 import pandas as pd
 
 TV_SERIES_SEASON_TO_MINS = 9 * 40
+OUTPUT_FILE_NAME = 'actors_sorted_by_air_time.csv'
+MIN_RELEASE_YEAR = 2013
 
 def get_filtered_amazon_videos_for_target_market(videos_df):
-    min_release_year = 2000
-    videos_df = videos_df.query(f'release_year > {min_release_year}')
+    videos_df = videos_df.query(f'release_year > {MIN_RELEASE_YEAR}')
 
     included_catogory = 'Kids'
-    excluded_categories = ('Animation', 'Anime', 'Documentary')
     kids_suitable_rating = ('ALL','ALL_AGES','G','PG','TV-G','7+', 'TV-Y', 'TV-Y7', '13+', 'PG-13')
-    return videos_df.loc[
-                            (
-                                videos_df['rating'].isin(kids_suitable_rating) 
-                                | videos_df['listed_in'].str.contains(included_catogory)
-                            )
-                            & ~videos_df['listed_in'].str.contains(excluded_categories[0]) 
-                            & ~videos_df['listed_in'].str.contains(excluded_categories[1])
-                        ]
+    kids_suitable_videos_df = videos_df.loc[videos_df['rating'].isin(kids_suitable_rating) |videos_df['listed_in'].str.contains(included_catogory)]
+    
+    excluded_category = 'Documentary'
+    videos_not_in_excluded_catogories = kids_suitable_videos_df.loc[~videos_df['listed_in'].str.contains(excluded_category)]
+    return videos_not_in_excluded_catogories
 
 def get_filtered_disney_videos_for_target_market(videos_df):
-    min_release_year = 2000
-    videos_df = videos_df.query(f'release_year > {min_release_year}')
+    videos_df = videos_df.query(f'release_year > {MIN_RELEASE_YEAR}')
 
-    excluded_categories = ('Animation', 'Anime', 'Docuseries', 'Documentary')
-    return videos_df.loc[~videos_df['listed_in'].isin(excluded_categories)]
+    excluded_categories = ('Docuseries', 'Documentary')
+    for category in excluded_categories:
+        videos_df = videos_df.loc[~videos_df['listed_in'].str.contains(category)]
+    return videos_df
 
 def get_actors_with_air_time_from_videos(videos_df):
     videos_with_non_empty_cast = videos_df[~videos_df['cast'].isnull()]
@@ -66,5 +64,6 @@ if __name__ == '__main__':
     all_actors_df = pd.concat([amazon_actors_with_air_time_df, disney_actors_with_air_time_df])
     all_actors_df = all_actors_df.groupby('actor').sum()
     
-    print('Actors with the most air time')
-    print(all_actors_df.sort_values('air_time_in_minutes', ascending=False).head(20))
+    all_actors_sorted_by_air_time = all_actors_df.sort_values('air_time_in_minutes', ascending=False)
+    all_actors_sorted_by_air_time.to_csv(OUTPUT_FILE_NAME)
+    print(f'Output has been written to a file. [fileName={OUTPUT_FILE_NAME}]')
