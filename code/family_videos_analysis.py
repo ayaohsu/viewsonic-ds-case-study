@@ -2,8 +2,11 @@
 import pandas as pd
 
 TV_SERIES_SEASON_TO_MINS = 9 * 40
-OUTPUT_FILE_NAME = 'actors_sorted_by_air_time.csv'
 MIN_RELEASE_YEAR = 2013
+
+AMAZON_PRIME_VIDEO_FILE_PATH = 'data/amazon_prime_titles.csv'
+DISNEY_PLUS_VIDEO_FILE_PATH = 'data/disney_plus_titles.csv'
+OUTPUT_FILE_NAME = 'actors_sorted_by_air_time.csv'
 
 def get_filtered_amazon_videos_for_target_market(videos_df):
     videos_df = videos_df.query(f'release_year > {MIN_RELEASE_YEAR}')
@@ -43,9 +46,9 @@ def get_actors_with_air_time_from_videos(videos_df):
     actors_with_total_air_time = actors_with_durations[['actor', 'air_time_in_minutes']].groupby('actor').sum()
     return actors_with_total_air_time
 
-if __name__ == '__main__':
+def analyze_family_videos():
 
-    amazon_videos_df = pd.read_csv('data/amazon_prime_titles.csv', index_col=[0])
+    amazon_videos_df = pd.read_csv(AMAZON_PRIME_VIDEO_FILE_PATH, index_col=[0])
     print(f'Loading amazon prime videos [count={len(amazon_videos_df.index)}]')
 
     amazon_videos_df = get_filtered_amazon_videos_for_target_market(amazon_videos_df)
@@ -54,7 +57,7 @@ if __name__ == '__main__':
 
     amazon_actors_with_air_time_df = get_actors_with_air_time_from_videos(amazon_videos_df)
 
-    disney_videos_df = pd.read_csv('data/disney_plus_titles.csv', index_col=[0])
+    disney_videos_df = pd.read_csv(DISNEY_PLUS_VIDEO_FILE_PATH, index_col=[0])
     print(f'Loading disney+ videos [count={len(disney_videos_df.index)}]')
 
     disney_videos_df = get_filtered_disney_videos_for_target_market(disney_videos_df)
@@ -67,3 +70,7 @@ if __name__ == '__main__':
     all_actors_sorted_by_air_time = all_actors_df.sort_values('air_time_in_minutes', ascending=False)
     all_actors_sorted_by_air_time.to_csv(OUTPUT_FILE_NAME)
     print(f'Output has been written to a file. [fileName={OUTPUT_FILE_NAME}]')
+
+if __name__ == '__main__':
+
+    analyze_family_videos()
