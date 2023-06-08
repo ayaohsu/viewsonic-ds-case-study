@@ -1,4 +1,3 @@
-import pytest
 import sys
 import os
 
@@ -12,10 +11,10 @@ sys.path.append(code_path)
 from family_videos_analysis import analyze_family_videos
 
 @patch('family_videos_analysis.AMAZON_PRIME_VIDEO_FILE_PATH', 'tests/test_amazon_prime_videos.csv')
-@patch('family_videos_analysis.DISNEY_PLUS_VIDEO_FILE_PATH', 'tests/test_disney_prime_videos.csv')
-@patch('family_videos_analysis.OUTPUT_FILE_NAME', 'tests/test_results.csv')
-def test_end_to_end_with_both_amazon_disney_data_sources():
-    analyze_family_videos()
+@patch('family_videos_analysis.DISNEY_PLUS_VIDEO_FILE_PATH', 'tests/test_disney_plus_videos.csv')
+@patch('family_videos_analysis.ANALYSIS_RESULT_FILE_NAME', 'tests/test_results.csv')
+def test_end_to_end_both_tv_series_and_movies():
+    analyze_family_videos(analyze_movies_only = False)
 
     test_result = pd.read_csv('tests/test_results.csv')
 
