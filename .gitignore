@@ -1,2 +1,3 @@
 tests/test_results.csv
 __pycache__
+actors_sorted_by_air_time*.csv

@@ -81,6 +81,7 @@ def analyze_family_videos(analyze_movies_only):
     all_actors_sorted_by_air_time.to_csv(output_file)
     print(f'Output has been written to a file. [fileName={output_file}]')
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Analyze family videos for commercial actor recommendation.')
     parser.add_argument('--movies', 
